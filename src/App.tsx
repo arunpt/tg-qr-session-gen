@@ -9,6 +9,7 @@ import AuthQrCode from "./components/Modal/AuthQrCode";
 import AuthPasswordInput from "./components/Modal/AuthPasswordInput";
 import { SessionSerializer } from "./utils/serializers";
 import { Api } from "telegram";
+import { PiTelegramLogoBold } from "react-icons/pi";
 
 const App = () => {
   const [appState, setAppState] = useState({
@@ -46,7 +47,11 @@ const App = () => {
     const telegram = new Telegram(creds.apiId, creds.apiHash)
     var conn = telegram.connect()
     conn.then(async (client) => {
-      const user = await telegram.loginWithQr({ onQrGen: onQrGenerate, onAuthError: onQrAuthError, onPassword: onPasswordPrompt })
+      const user = await telegram.loginWithQr({
+        onQrGen: onQrGenerate,
+        onAuthError: onQrAuthError,
+        onPassword: onPasswordPrompt,
+      });
       const { dcId, authKey, port } = client.session;
       const key = authKey?.getKey();
       const ipAddress = telegram.dcIps[dcId]
@@ -72,7 +77,11 @@ const App = () => {
         default:
           break
       }
-      setAppState((prev) => ({ ...prev, sessionString: sessionString ?? "", userInfo: user?.username ?? "" }))
+      setAppState((prev) => ({
+        ...prev,
+        sessionString: sessionString ?? "",
+        userInfo: user?.username ?? "",
+      }));
     }).catch((err) => {
       toast.error(`Telegram Says: ${err}`)
     }).finally(() => setIsLoading(false))
@@ -90,7 +99,16 @@ const App = () => {
 
   return (
     <div className="w-full">
-      <div className="mt-48">
+       <div className="mt-16 flex justify-center">
+        <div className="mx-8">
+          <span className="flex gap-1 text-cyan-500">
+            <p className="text-2xl font-black">Telegram</p>
+            <PiTelegramLogoBold />
+          </span>
+          <p className="text-3xl font-black">QR Code Session String Generator</p>
+        </div>
+      </div>
+      <div className="mt-24">
         <Form onFormSubmit={submitForm} />
       </div>
       <Modal
