@@ -1,6 +1,7 @@
 # Telegram QR Code Session String Generator
 Generate a session string for your Telegram account just by scanning the QR code (also supports accounts with 2FA enabled).
 
+[Live Demo](https://qrsessiongen.vercel.app/)
 
 
 ### Supported Libraries
