@@ -19,20 +19,20 @@ export class BufferWriter {
 }
 
 export const base64Encode = (data: Buffer | Uint8Array, urlSafe = false, shouldTrim = false): string => {
-  var b64EncodedString = data.toString("base64");
+  const b64EncodedString = data.toString("base64");
   if (!urlSafe) return b64EncodedString;
-  var urlSafeString = b64EncodedString.replaceAll("+", "-").replaceAll("/", "_");
+  const urlSafeString = b64EncodedString.replaceAll("+", "-").replaceAll("/", "_");
   return shouldTrim ? urlSafeString.replace(/=*$/, "") : urlSafeString;
 };
 
-export const bigintToByteArray = (num: bigint | number | BigInt, byteCount: number): Uint8Array => {
+export const bigintToByteArray = (num: bigint | number | bigint, byteCount: number): Uint8Array => {
   const hex = num.toString(16).padStart(byteCount * 2, "0");
   return Uint8Array.from(hex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)));
 };
 
 export const writeInt16 = (value: number, writer: BufferWriter, signed: boolean): void => {
   writer.write(new Uint8Array(2));
-  var dataView = new DataView(writer.buffer.buffer);
+  const dataView = new DataView(writer.buffer.buffer);
   if (signed) dataView.setInt16(writer.buffer.length - 2, value);
   else dataView.setUint16(writer.buffer.length - 2, value);
 };

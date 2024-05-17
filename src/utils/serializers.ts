@@ -12,7 +12,7 @@ export class SessionSerializer {
     dcId: number,
     apiId: number,
     authKey: Uint8Array | Buffer,
-    userId: BigInt | bigint,
+    userId: bigint,
     testMode: boolean,
     isBot: boolean
   ): string {

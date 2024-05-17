@@ -45,7 +45,7 @@ const App = () => {
   const submitForm = async (creds: FormData, setIsLoading: Dispatch<SetStateAction<boolean>>) => {
     setIsLoading(true)
     const telegram = new Telegram(creds.apiId, creds.apiHash)
-    var conn = telegram.connect()
+    const conn = telegram.connect()
     conn.then(async (client) => {
       const user = await telegram.loginWithQr({
         onQrGen: onQrGenerate,
@@ -60,7 +60,7 @@ const App = () => {
       }
 
       const serializer = new SessionSerializer();
-      var sessionString: string | null = null;
+      let sessionString: string | null = null;
       switch (creds.library) {
         case "pyrogram":
           console.log("generating pyro string");
@@ -99,7 +99,7 @@ const App = () => {
 
   return (
     <div className="w-full">
-       <div className="mt-16 flex justify-center">
+      <div className="mt-16 flex justify-center">
         <div className="mx-8">
           <span className="flex gap-1 text-cyan-500">
             <p className="text-2xl font-black">Telegram</p>
