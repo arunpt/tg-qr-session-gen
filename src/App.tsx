@@ -3,10 +3,10 @@ import Form from "./components/Form";
 import Modal from "./components/Modal";
 import { FormData } from "./utils/types";
 import toast, { Toaster } from "react-hot-toast";
-import OutputSessionString from "./components/Modal/OutputSessionString";
+import OutputSessionString from "./components/ModalBody/OutputSessionString";
 import { Telegram } from "./utils/telegram";
-import AuthQrCode from "./components/Modal/AuthQrCode";
-import AuthPasswordInput from "./components/Modal/AuthPasswordInput";
+import AuthQrCode from "./components/ModalBody/AuthQrCode";
+import AuthPasswordInput from "./components/ModalBody/AuthPasswordInput";
 import { SessionSerializer } from "./utils/serializers";
 import { Api } from "telegram";
 import { PiTelegramLogoBold } from "react-icons/pi";
@@ -15,7 +15,7 @@ const App = () => {
   const [appState, setAppState] = useState({
     showModal: false,
     qrUrl: "",
-    resolvePasswordPromise: (_pass: string) => { },
+    resolvePasswordPromise: (_pass: string) => {},
     hasPassword: false,
     passwordHint: "",
     sessionString: "",
@@ -28,7 +28,7 @@ const App = () => {
   };
 
   const onQrAuthError = (error: string) => {
-    setPasswordError(error)
+    setPasswordError(error);
   };
 
   const onPasswordPrompt = async (hint?: string): Promise<string> => {
@@ -43,48 +43,51 @@ const App = () => {
   };
 
   const submitForm = async (creds: FormData, setIsLoading: Dispatch<SetStateAction<boolean>>) => {
-    setIsLoading(true)
-    const telegram = new Telegram(creds.apiId, creds.apiHash)
-    const conn = telegram.connect()
-    conn.then(async (client) => {
-      const user = await telegram.loginWithQr({
-        onQrGen: onQrGenerate,
-        onAuthError: onQrAuthError,
-        onPassword: onPasswordPrompt,
-      });
-      const { dcId, authKey, port } = client.session;
-      const key = authKey?.getKey();
-      const ipAddress = telegram.dcIps[dcId]
-      if (user instanceof Api.UserEmpty || key == undefined) {
-        return toast.error("Something went wrong, try again later");
-      }
+    setIsLoading(true);
+    const telegram = new Telegram(creds.apiId, creds.apiHash);
+    const conn = telegram.connect();
+    conn
+      .then(async (client) => {
+        const user = await telegram.loginWithQr({
+          onQrGen: onQrGenerate,
+          onAuthError: onQrAuthError,
+          onPassword: onPasswordPrompt,
+        });
+        const { dcId, authKey, port } = client.session;
+        const key = authKey?.getKey();
+        const ipAddress = telegram.dcIps[dcId];
+        if (user instanceof Api.UserEmpty || key == undefined) {
+          return toast.error("Something went wrong, try again later");
+        }
 
-      const serializer = new SessionSerializer();
-      let sessionString: string | null = null;
-      switch (creds.library) {
-        case "pyrogram":
-          console.log("generating pyro string");
-          sessionString = serializer.pyrogram(dcId, creds.apiId, key, BigInt(user.id.toString()), false, false)
-          break;
-        case "telethon":
-          console.log("generating telethon string");
-          sessionString = serializer.telethon(dcId, ipAddress, port, key)
-          break;
-        case "gramjs":
-          console.log("generating gramjs string");
-          sessionString = serializer.gramjs(dcId, ipAddress, port, key)
-          break;
-        default:
-          break
-      }
-      setAppState((prev) => ({
-        ...prev,
-        sessionString: sessionString ?? "",
-        userInfo: user?.username ?? "",
-      }));
-    }).catch((err) => {
-      toast.error(`Telegram Says: ${err}`)
-    }).finally(() => setIsLoading(false))
+        const serializer = new SessionSerializer();
+        let sessionString: string | null = null;
+        switch (creds.library) {
+          case "pyrogram":
+            console.log("generating pyro string");
+            sessionString = serializer.pyrogram(dcId, creds.apiId, key, BigInt(user.id.toString()), false, false);
+            break;
+          case "telethon":
+            console.log("generating telethon string");
+            sessionString = serializer.telethon(dcId, ipAddress, port, key);
+            break;
+          case "gramjs":
+            console.log("generating gramjs string");
+            sessionString = serializer.gramjs(dcId, ipAddress, port, key);
+            break;
+          default:
+            break;
+        }
+        setAppState((prev) => ({
+          ...prev,
+          sessionString: sessionString ?? "",
+          userInfo: user?.username ?? "",
+        }));
+      })
+      .catch((err) => {
+        toast.error(`Telegram Says: ${err}`);
+      })
+      .finally(() => setIsLoading(false));
 
     toast.promise(conn, {
       loading: "Connecting to Telegram servers...",
@@ -116,10 +119,7 @@ const App = () => {
         onQuitButtonPress={() => setAppState((prev) => ({ ...prev, showModal: false }))}
       >
         {appState.sessionString ? (
-          <OutputSessionString
-            sessionString={appState.sessionString}
-            userInfo={appState.userInfo}
-          />
+          <OutputSessionString sessionString={appState.sessionString} userInfo={appState.userInfo} />
         ) : appState.hasPassword ? (
           <AuthPasswordInput
             onPinSubmit={submitPin}

@@ -1,14 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
 
-export type ButtonProps = {
-  isLoading?: boolean;
-  className?: string;
-  buttonText?: string;
-  disabled?: boolean;
-  buttonType?: string;
-  onTap?: () => void;
-};
-
 export type FormData = {
   library: string;
   apiId: number;
